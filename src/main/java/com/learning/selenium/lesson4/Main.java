@@ -34,14 +34,19 @@ public class Main {
         WebDriver driver = null;
         try {
             driver = new ChromeDriver();
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+            //авторзация
             driver.navigate().to(URL);
             driver.findElement(By.name("username")).sendKeys(LOGIN);
             driver.findElement(By.name("password")).sendKeys(PASSWORD);
             driver.findElement(By.name("remember_me")).click();
             driver.findElement(By.name("login")).click();
+            //Проход по всем разделам админки:
+            //1. Если у родительского элемента нет дочернего элемента,
+            // то сверяется название элемента родительского элемента с заголовком страницы
+            //2. Если в ходе сопоставления имени элемента и заголовка страницы выявлены несоответствия,
+            // выводится сообщение в консоль и программа продолжает проходить по остальным элементам
             List<WebElement> mainElements = getMainElements(driver); //выбрал список, чтобы избежать исключения
-            while(mainElements.size() > 0) {
+            while(mainElements.size() > 0) { //пробег по основным элементам
                 String paneName = mainElements.get(0).getText();
                 String pageTitle = null;
                 mainElements.get(0).click();
@@ -53,7 +58,7 @@ public class Main {
                     assertEquals(paneName, pageTitle, false);
                     //sleepMs(1000); //чтобы успеть проследить за каждым действием
                     List<WebElement> childElements = getSubElements(driver); //выбрал список, чтобы избежать исключения
-                    while(childElements.size() > 0) {
+                    while(childElements.size() > 0) { //пробег по дочерним элементам
                         paneName = childElements.get(0).getText();
                         childElements.get(0).click();
                         pageTitle = getPageTitle(driver);
