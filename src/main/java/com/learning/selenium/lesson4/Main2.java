@@ -10,8 +10,6 @@ import java.util.List;
 public class Main2 {
 
     private static final String URL = "http://localhost:8080/litecart";
-    private static final String LOGIN = "admin";
-    private static final String PASSWORD = "admin";
 
     //Получить все блоки с товарами
     private static final String XPATH_PRODUCTS = "//li[@class='product column shadow hover-light']";
