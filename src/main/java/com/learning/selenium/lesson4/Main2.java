@@ -12,7 +12,7 @@ public class Main2 {
     private static final String URL = "http://localhost:8080/litecart";
 
     //Получить все блоки с товарами
-    private static final String XPATH_PRODUCTS = "//li[@class='product column shadow hover-light']";
+    private static final String XPATH_PRODUCTS = "//li[contains(@class,'product')]";
 
     //Получить название продукта
     private static final String XPATH_PRODUCT_TITLE = ".//div[@class='name']";
