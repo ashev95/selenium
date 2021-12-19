@@ -18,7 +18,7 @@ public class Main2 {
     private static final String XPATH_PRODUCT_TITLE = ".//div[@class='name']";
 
     //Получить все стикеры у выбранного товара
-    private static final String XPATH_STICKERS = ".//div[@class='sticker new' or @class='sticker sale']";
+    private static final String XPATH_STICKERS = ".//div[contains(@class,'sticker')]";
 
     public static void main(String args[]) {
         WebDriver driver = null;
