@@ -1,15 +1,12 @@
 package com.learning.selenium.lesson5;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main3 {
 
@@ -44,13 +41,13 @@ public class Main3 {
         WebElement priceSimpleElement = infoElement.findElement(By.xpath("./div[@class='price-wrapper']/s[@class='regular-price']"));
         WebElement pricePromoElement = infoElement.findElement(By.xpath("./div[@class='price-wrapper']/strong[@class='campaign-price']"));
         String priceSimpleText = priceSimpleElement.getText();
-        String priceSimpleColor = priceSimpleElement.getCssValue("color");
+        Color priceSimpleColor = new Color(priceSimpleElement.getCssValue("color"));
         boolean priceSimpleCrossedOut = priceSimpleElement.getCssValue("text-decoration").contains("line-through");
         String pricePromoText = pricePromoElement.getText();
-        String pricePromoColor = pricePromoElement.getCssValue("color");
+        Color pricePromoColor = new Color(pricePromoElement.getCssValue("color"));
         boolean pricePromoCrossedOut = priceSimpleElement.getCssValue("text-decoration").contains("line-through");
-        Dimension priceSimpleSize = priceSimpleElement.getSize();
-        Dimension pricePromoSize = pricePromoElement.getSize();
+        Double priceSimpleSize = Double.parseDouble(priceSimpleElement.getCssValue("font-size").replace("px", ""));
+        Double pricePromoSize = Double.parseDouble(pricePromoElement.getCssValue("font-size").replace("px", ""));
         int priceSimpleFontWeight = Integer.parseInt(priceSimpleElement.getCssValue("font-weight"));
         int pricePromoFontWeight = Integer.parseInt(pricePromoElement.getCssValue("font-weight"));
         return new ProductProps(name, null, priceSimpleText, priceSimpleColor, priceSimpleCrossedOut, priceSimpleSize,
@@ -64,13 +61,13 @@ public class Main3 {
         WebElement priceSimpleElement = aTag.findElement(By.xpath("./div[@class='price-wrapper']/s[@class='regular-price']"));
         WebElement pricePromoElement = aTag.findElement(By.xpath("./div[@class='price-wrapper']/strong[@class='campaign-price']"));
         String priceSimpleText = priceSimpleElement.getText();
-        String priceSimpleColor = priceSimpleElement.getCssValue("color");
+        Color priceSimpleColor = new Color(priceSimpleElement.getCssValue("color"));
         boolean priceSimpleCrossedOut = priceSimpleElement.getCssValue("text-decoration").contains("line-through");
         String pricePromoText = pricePromoElement.getText();
-        String pricePromoColor = pricePromoElement.getCssValue("color");
+        Color pricePromoColor = new Color(pricePromoElement.getCssValue("color"));
         boolean pricePromoCrossedOut = priceSimpleElement.getCssValue("text-decoration").contains("line-through");
-        Dimension priceSimpleSize = priceSimpleElement.getSize();
-        Dimension pricePromoSize = pricePromoElement.getSize();
+        Double priceSimpleSize = Double.parseDouble(priceSimpleElement.getCssValue("font-size").replace("px", ""));
+        Double pricePromoSize = Double.parseDouble(pricePromoElement.getCssValue("font-size").replace("px", ""));
         int priceSimpleFontWeight = Integer.parseInt(priceSimpleElement.getCssValue("font-weight"));
         int pricePromoFontWeight = Integer.parseInt(pricePromoElement.getCssValue("font-weight"));
         return new ProductProps(name, link, priceSimpleText, priceSimpleColor, priceSimpleCrossedOut, priceSimpleSize,
@@ -81,22 +78,21 @@ public class Main3 {
         private String name;
         private String link;
         private String priceSimpleText;
-        private String priceSimpleColor;
+        private Color priceSimpleColor;
         private boolean priceSimpleCrossedOut;
-        private Dimension priceSimpleSize;
+        private Double priceSimpleSize;
         private String pricePromoText;
-        private String pricePromoColor;
+        private Color pricePromoColor;
         private boolean pricePromoCrossedOut;
-        private Dimension pricePromoSize;
-        private boolean pricesHaveDiffColor;
+        private Double pricePromoSize;
         private boolean priceSimpleSizeLessThanPromo;
         private int priceSimpleFontWeight;
         private int pricePromoFontWeight;
         private boolean priceSimpleFontWeightLessThanPromo;
 
-        public ProductProps(String name, String link, String priceSimpleText, String priceSimpleColor, boolean priceSimpleCrossedOut,
-                            Dimension priceSimpleSize, String pricePromoText, String pricePromoColor,
-                            boolean pricePromoCrossedOut, Dimension pricePromoSize, int priceSimpleFontWeight, int pricePromoFontWeight) {
+        public ProductProps(String name, String link, String priceSimpleText, Color priceSimpleColor, boolean priceSimpleCrossedOut,
+                            Double priceSimpleSize, String pricePromoText, Color pricePromoColor,
+                            boolean pricePromoCrossedOut, Double pricePromoSize, int priceSimpleFontWeight, int pricePromoFontWeight) {
             this.name = name;
             this.link = link;
             this.priceSimpleText = priceSimpleText;
@@ -107,8 +103,7 @@ public class Main3 {
             this.pricePromoColor = pricePromoColor;
             this.pricePromoCrossedOut = pricePromoCrossedOut;
             this.pricePromoSize = pricePromoSize;
-            this.pricesHaveDiffColor = !this.priceSimpleColor.equals(this.pricePromoColor);
-            this.priceSimpleSizeLessThanPromo = priceSimpleSize.getHeight() * priceSimpleSize.getWidth() < pricePromoSize.getHeight() * pricePromoSize.getWidth();
+            this.priceSimpleSizeLessThanPromo = priceSimpleSize < pricePromoSize;
             this.priceSimpleFontWeight = priceSimpleFontWeight;
             this.pricePromoFontWeight = pricePromoFontWeight;
             this.priceSimpleFontWeightLessThanPromo = priceSimpleFontWeight < pricePromoFontWeight;
@@ -120,8 +115,19 @@ public class Main3 {
             if (priceSimpleCrossedOut != props.isPriceSimpleCrossedOut()) msg("Флаг зачёркнутости цвета обычной цены", Boolean.toString(priceSimpleCrossedOut), Boolean.toString(props.isPriceSimpleCrossedOut()));
             if (pricePromoCrossedOut != props.isPricePromoCrossedOut()) msg("Флаг зачёркнутости цвета акционной цены", Boolean.toString(pricePromoCrossedOut), Boolean.toString(props.isPricePromoCrossedOut()));
             if (priceSimpleSizeLessThanPromo != props.isPriceSimpleSizeLessThanPromo()) msg("Флаг \"Размер текста обычной цены меньше акционной\" ", Boolean.toString(priceSimpleSizeLessThanPromo), Boolean.toString(props.isPriceSimpleSizeLessThanPromo()));
-            if (pricesHaveDiffColor != props.isPricesHaveDiffColor()) msg("Флаг \"Обычная и акционная цены имеют разный цвет\" ", Boolean.toString(pricesHaveDiffColor), Boolean.toString(props.isPricesHaveDiffColor()));
             if (priceSimpleFontWeightLessThanPromo != props.isPriceSimpleFontWeightLessThanPromo()) msg("Флаг \"Размер обычной цены меньше акционной\" ", Boolean.toString(priceSimpleFontWeightLessThanPromo), Boolean.toString(props.isPriceSimpleFontWeightLessThanPromo()));
+            if (!isGray(priceSimpleColor)) System.out.println("Цвет обычной цены с главной страницы не является серым. Значение: " + priceSimpleColor);
+            if (!isRed(pricePromoColor)) System.out.println("Цвет акционной цены с главной страницы не является красным. Значение: " + pricePromoColor);
+            if (!isGray(getPriceSimpleColor())) System.out.println("Цвет обычной цены со страницы продукта не является серым. Значение: " + getPriceSimpleColor());
+            if (!isRed(getPricePromoColor())) System.out.println("Цвет акционной цены со страницы продукта не является красным. Значение: " + getPricePromoColor());
+        }
+
+        private boolean isRed(Color color) {
+            return (color.getG() == 0 && color.getB() == 0);
+        }
+
+        private boolean isGray(Color color) {
+            return (color.getR() == color.getG() && color.getG() == color.getB());
         }
 
         private void msg(String propName, String v1, String v2) {
@@ -156,13 +162,57 @@ public class Main3 {
             return priceSimpleSizeLessThanPromo;
         }
 
-        public boolean isPricesHaveDiffColor() {
-            return pricesHaveDiffColor;
-        }
-
         public boolean isPriceSimpleFontWeightLessThanPromo() {
             return priceSimpleFontWeightLessThanPromo;
         }
+
+        public Color getPriceSimpleColor() {
+            return priceSimpleColor;
+        }
+
+        public Color getPricePromoColor() {
+            return pricePromoColor;
+        }
+    }
+
+    private static class Color {
+        private final static Pattern rgbaMask = Pattern.compile("rgba\\((\\d{1,3}), (\\d{1,3}), (\\d{1,3}), (\\d)\\)");
+        private final static Pattern rgbMask = Pattern.compile("rgb\\((\\d{1,3}), (\\d{1,3}), (\\d{1,3})\\)");
+        private int r;
+        private int g;
+        private int b;
+        public Color(String dirt) {
+            Matcher matcher;
+            if (dirt.split(",").length == 4) {
+                matcher = rgbaMask.matcher(dirt);
+            } else {
+                matcher = rgbMask.matcher(dirt);
+            }
+            if (matcher.find() && matcher.groupCount() > 2) {
+                r = Integer.parseInt(matcher.group(1));
+                g = Integer.parseInt(matcher.group(2));
+                b = Integer.parseInt(matcher.group(3));
+            } else {
+                throw new RuntimeException("Incorrect rgb/rgba format for input value: " + dirt);
+            }
+        }
+
+        public int getR() {
+            return r;
+        }
+
+        public int getG() {
+            return g;
+        }
+
+        public int getB() {
+            return b;
+        }
+
+        public String toString() {
+            return "{r:" + r + ", g:" + g + ", b:" + b + "}";
+        }
+
     }
 
 }
