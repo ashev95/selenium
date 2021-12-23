@@ -21,9 +21,9 @@ public class Main {
             driver = new ChromeDriver();
             driver.navigate().to(URL);
             driver.findElement(By.cssSelector(CSS_REG_LINK)).click();
-            Form form = new Form(1, "InstanceCompany", "Андрей", "Юрченко",
-                    "г. Москва, Комарова 13", "г. Москва, Комарова 14", 12345, "Москва",
-                    "Российский Федерация", "andrey_yur12@yandex.ru", "+37689379041",
+            Form form = new Form(1, "InstanceCompany", "Andrey", "Yurchenko",
+                    "Times Square 13", "Times Square 14", 12345, "NY",
+                    "United States", "andrey_yur12@gmail.com", "+37689379041",
                     false, "12345");
 
             driver.findElement(By.name("tax_id")).sendKeys(Integer.toString(form.getTaxId()));
@@ -37,7 +37,7 @@ public class Main {
 
             driver.findElement(By.cssSelector("span.selection > span[role]")).click();
             for (WebElement li : driver.findElements(By.cssSelector("span.select2-results > ul > li"))) {
-                if (li.getText().equals("United States")) {
+                if (li.getText().equals(form.getCountry())) {
                     li.click();
                     break;
                 }
