@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.Select;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class Main2 {
 
@@ -35,7 +36,8 @@ public class Main2 {
             driver.findElement(By.cssSelector(CSS_CATALOG_LINK)).click();
             driver.findElement(By.cssSelector(CSS_CREATE_PRODUCT_LINK)).click();
 
-            String duckName = "DuckToy";
+            String id = UUID.randomUUID().toString().replace("{", "").replace("}", "").replace("-", "");
+            String duckName = "DuckToy_" + id;
 
             ProductForm form = new ProductForm(true, duckName, 1, Arrays.asList(new String[]{"Root", "Rubber Ducks", "Subcategory"}),
                     "Rubber Ducks", Arrays.asList(new String[]{"1-1", "1-2", "1-3"}), 3.10, "pcs", "3-5 days",

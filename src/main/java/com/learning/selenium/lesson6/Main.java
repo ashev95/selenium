@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class Main {
 
@@ -21,9 +22,10 @@ public class Main {
             driver = new ChromeDriver();
             driver.navigate().to(URL);
             driver.findElement(By.cssSelector(CSS_REG_LINK)).click();
-            Form form = new Form(1, "InstanceCompany", "Andrey", "Yurchenko",
+            String id = UUID.randomUUID().toString().replace("{", "").replace("}", "").replace("-", "");
+            Form form = new Form(1, "InstanceCompany", "Andrey", "Yurchenko_" + id, //для удобства проверки, когда пользователь перезашел
                     "Times Square 13", "Times Square 14", 12345, "NY",
-                    "United States", "andrey_yur12@gmail.com", "+37689379041",
+                    "United States", "andrey_yur_" + id + "@gmail.com", "+37689379041",
                     false, "12345");
 
             driver.findElement(By.name("tax_id")).sendKeys(Integer.toString(form.getTaxId()));
