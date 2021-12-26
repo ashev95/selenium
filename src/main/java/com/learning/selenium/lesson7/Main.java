@@ -10,13 +10,12 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 public class Main {
 
     private static final String URL = "http://localhost:8080/litecart";
+    private static final int PRODUCT_COUNT = 3;
 
     public static void main(String args[]) {
         WebDriver driver = null;
@@ -24,33 +23,24 @@ public class Main {
             driver = new ChromeDriver();
             driver.navigate().to(URL);
 
-            List<String> productElementLinks = new LinkedList<>();
-            for (WebElement webElement : driver.findElements(By.cssSelector("li.product"))) {
-                if (productElementLinks.size() > 2) {
-                    break;
-                }
-                productElementLinks.add(webElement.findElement(By.tagName("a")).getAttribute("href"));
-            }
-
-            for (String link : productElementLinks) {
-                addProduct(driver, link);
+            for (int i = 0; i < PRODUCT_COUNT; i++) {
+                addFirstProduct(driver);
             }
 
             driver.findElement(By.id("cart")).click();
 
             Wait wait = new WebDriverWait(driver, Duration.ofMillis(500));
 
-            for (int i = 0; i < productElementLinks.size(); i++) {
-                //выбрать первый элемент, если больше 1 наименования
-                List<WebElement> tableElements = driver.findElements(By.className("dataTable")); //если таблица есть - больше 1 наименования
-                if (tableElements.size() > 0) {
-                    tableElements.get(0).click();
+            List<WebElement> removeButtons = getRemoveButtons(driver);
+            while (removeButtons.size() > 0) {
+                WebElement tableElement = driver.findElement(By.className("dataTable"));
+                List<WebElement> shortcuts = driver.findElements(By.cssSelector("li.shortcut"));
+                if (shortcuts.size() > 0) {
+                    shortcuts.get(0).click();
                 }
-                //удалить первый продукт, если больше одного наименования, или удалить текущий продукт, если одно наименование
-                driver.findElement(By.cssSelector("button[name=remove_cart_item]")).click();
-                if (tableElements.size() > 0) {
-                    wait.until(ExpectedConditions.stalenessOf(tableElements.get(0)));
-                }
+                removeButtons.get(0).click();
+                wait.until(ExpectedConditions.stalenessOf(tableElement));
+                removeButtons = getRemoveButtons(driver);
             }
 
             Thread.sleep(15000);
@@ -65,8 +55,12 @@ public class Main {
         }
     }
 
-    private static void addProduct(WebDriver driver, String link) {
-        driver.navigate().to(link);
+    private static List<WebElement> getRemoveButtons(WebDriver driver) {
+        return driver.findElements(By.cssSelector("button[name=remove_cart_item]"));
+    }
+
+    private static void addFirstProduct(WebDriver driver) {
+        driver.findElement(By.cssSelector("li.product")).click();
 
         int productCount = getProductCount(driver); //фиксируем исходное кол-во товаров
 
