@@ -70,11 +70,26 @@
             <artifactId>selenium-java</artifactId>
             <version>4.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>io.percy</groupId>
             <artifactId>percy-java-selenium</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.lightbody.bmp</groupId>
+            <artifactId>browsermob-core</artifactId>
+            <version>2.1.5</version>
+        </dependency>
+
+        <!-- fix for browsermob-core-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.0.1-jre</version>
+        </dependency>
+
     </dependencies>
 
 </project>
